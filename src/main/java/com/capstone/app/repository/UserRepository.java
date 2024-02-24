@@ -42,4 +42,11 @@ public class UserRepository implements UserRepositoryInterface{
     public List<UserEntity> getAllUsers() {
         return null;
     }
+
+    @Override
+    public UserEntity getUserByUsername(String username) {
+        return entityManager.createQuery("FROM UserEntity u WHERE u.username = :username", UserEntity.class)
+                .setParameter("username", username)
+                .getSingleResult();
+    }
 }

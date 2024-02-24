@@ -1,5 +1,6 @@
 package com.capstone.app.controller;
 
+import com.capstone.app.Exception.UserAlreadyExistsException;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.repository.UserRepository;
 import com.capstone.app.service.UserService;
@@ -22,7 +23,13 @@ public class UserController {
     private UserServiceInterface userService;
     @PostMapping("/addUser")
     public ResponseEntity<Object> addUser(@RequestBody UserEntity user) {
-        userService.addUser(user);
+        try {
+            userService.addUser(user);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", e.getMessage()));
+        }
         Map<String, String> message = new HashMap<>();
         message.put("headerMessage", "User added successfully");
         message.put("bodyMessage", "You may now login with your credentials");

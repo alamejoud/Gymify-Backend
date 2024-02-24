@@ -1,18 +1,16 @@
 package com.capstone.app.service;
 
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
 @Service
+@NoArgsConstructor
 public class BCryptService implements BCryptServiceInterface{
 
-    private final int logRounds;
-
-    public BCryptService(int logRounds) {
-        this.logRounds = logRounds;
-    }
+    private final int logRounds = 10;
 
     public String hash(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(logRounds));
