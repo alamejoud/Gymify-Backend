@@ -3,10 +3,12 @@ package com.capstone.app.service;
 import com.capstone.app.Exception.UserAlreadyExistsException;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.repository.UserRepositoryInterface;
+import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class UserService implements UserServiceInterface{
@@ -30,13 +32,31 @@ public class UserService implements UserServiceInterface{
 
     @Override
     public boolean checkUserExists(String username) {
-        UserEntity userEntity = userRepository.getUserByUsername(username.toLowerCase());
-        return userEntity != null;
+        return userRepository.getUserByUsername(username) != null;
     }
 
     @Override
     public boolean checkUser(String username, String password) {
+
+        UserEntity userEntity = userRepository.getUserByUsername(username);
+        if (userEntity == null) {
+            return false;
+        }
+        String[] mutableHash = new String[1];
+        mutableHash[0] = userEntity.getPassword();
+        Function<String, Boolean> update = hash -> {
+            mutableHash[0] = hash;
+            return true;
+        };
+        if (bCryptService.verifyAndUpdateHash(password, userEntity.getPassword(), update)) {
+            userEntity.setPassword(mutableHash[0]);
+            userEntity.setCity("New York");
+            userRepository.updateUser(userEntity);
+            return true;
+        }
+
         return false;
+
     }
 
     @Override
@@ -56,6 +76,11 @@ public class UserService implements UserServiceInterface{
 
     @Override
     public UserEntity getUserByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public UserEntity getUserByUsernameAndPassword(String username, String password) {
         return null;
     }
 

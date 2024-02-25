@@ -45,8 +45,17 @@ public class UserRepository implements UserRepositoryInterface{
 
     @Override
     public UserEntity getUserByUsername(String username) {
-        return entityManager.createQuery("FROM UserEntity u WHERE u.username = :username", UserEntity.class)
-                .setParameter("username", username)
-                .getSingleResult();
+        List<UserEntity> results = entityManager.createQuery("SELECT u FROM UserEntity u WHERE LOWER(u.username) = LOWER(:username)", UserEntity.class)
+                .setParameter("username", username).getResultList();
+        if (results == null || results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
+    }
+
+    @Override
+    public void updateUser(UserEntity userEntity) {
+        entityManager.merge(userEntity);
     }
 }

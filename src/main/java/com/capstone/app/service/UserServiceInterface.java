@@ -15,4 +15,5 @@ public interface UserServiceInterface {
         public List<UserEntity> getAllUsers();
         public boolean checkUserExists(String username);
         public boolean checkUser(String username, String password);
+        public UserEntity getUserByUsernameAndPassword(String username, String password);
 }

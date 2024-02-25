@@ -13,4 +13,5 @@ public interface UserRepositoryInterface {
     public UserEntity getUser(int id);
     public List<UserEntity> getAllUsers();
     public UserEntity getUserByUsername(String username);
+    public void updateUser(UserEntity userEntity);
 }
