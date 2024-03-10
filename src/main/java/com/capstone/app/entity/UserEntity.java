@@ -3,6 +3,9 @@ package com.capstone.app.entity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
+import org.hibernate.annotations.Formula;
+
+import java.sql.Blob;
 
 @Entity
 @Transactional
@@ -36,7 +39,17 @@ public class UserEntity {
     private String phoneNumber;
     @Column(name = "USER_ROLE")
     private String role;
+    @Formula(value = "(SELECT L.LOOKUP_NAME FROM G_LOOKUPS L WHERE L.LOOKUP_TYPE = 'USER_ROLE' AND L.LOOKUP_CODE = USER_ROLE)")
+    private String roleName;
     @Column(name = "USER_STATUS")
     private String status;
+    @Formula(value = "(SELECT L.LOOKUP_NAME FROM G_LOOKUPS L WHERE L.LOOKUP_TYPE = 'USER_STATUS' AND L.LOOKUP_CODE = USER_STATUS)")
+    private String statusName;
+    @Column(name="USER_TITLE")
+    private String title;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "PROFILE_PICTURE")
+    private byte[] profilePicture;
 
 }

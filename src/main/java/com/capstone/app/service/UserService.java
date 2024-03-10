@@ -1,9 +1,8 @@
 package com.capstone.app.service;
 
-import com.capstone.app.Exception.UserAlreadyExistsException;
+import com.capstone.app.exception.UserAlreadyExistsException;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.repository.UserRepositoryInterface;
-import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +64,8 @@ public class UserService implements UserServiceInterface{
     }
 
     @Override
-    public void updateUser(int id, String name) {
-
+    public void updateUser(UserEntity user) {
+        userRepository.updateUser(user);
     }
 
     @Override
@@ -76,7 +75,7 @@ public class UserService implements UserServiceInterface{
 
     @Override
     public UserEntity getUserByUsername(String username) {
-        return null;
+        return userRepository.getUserByUsername(username);
     }
 
     @Override
