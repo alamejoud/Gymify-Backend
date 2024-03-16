@@ -4,15 +4,13 @@ import com.capstone.app.exception.UserAlreadyExistsException;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.service.JwtService;
 import com.capstone.app.service.UserServiceInterface;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.sql.Blob;
-import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.*;
 
 @RestController
@@ -42,10 +40,11 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserEntity user) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         if (userService.checkUser(user.getUsername(), user.getPassword())) {
             response.put("token", jwtService.generateToken(user.getUsername()));
             response.put("message", "Login successful");
+            response.put("user", userService.getUserByUsername(user.getUsername()));
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
@@ -66,8 +65,13 @@ public class UserController {
                 .body(Map.of("message", "An error occurred, please try again later"));
     }
 
-    @GetMapping("/getUser")
-    public ResponseEntity<Object> getUser(@RequestParam String token) {
+    @GetMapping("/getLoggedInUser")
+    public ResponseEntity<Object> getLoggedInUser(@RequestParam String token) {
+        if (jwtService.extractExpiration(token).before(new Date())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "Token has expired"));
+        }
         String username = jwtService.extractUsername(token);
         UserEntity user = userService.getUserByUsername(username);
         if (user == null) {
@@ -81,24 +85,16 @@ public class UserController {
     }
 
     @PostMapping("/uploadProfilePicture")
-    public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file) throws IOException {
-        String username = "Admin";
+    public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("token") String token) throws IOException, SQLException {
+        if (jwtService.extractExpiration(token).before(new Date())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "Token has expired"));
+        }
+        String username = jwtService.extractUsername(token);
         UserEntity user = userService.getUserByUsername(username);
         user.setProfilePicture(file.getBytes());
         userService.updateUser(user);
-//        File myFile = new File("C:\\Users\\PC\\Desktop\\image.jpg");
-//        byte[] byteArray = new byte[(int) myFile.length()];
-//        try (FileInputStream inputStream = new FileInputStream(myFile)) {
-//            inputStream.read(byteArray);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        try (FileOutputStream fos = new FileOutputStream("C:\\Users\\PC\\Desktop\\imageNew.jpg")) {
-//            fos.write(byteArray);
-//            //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
-//        }
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("message", "Profile picture uploaded successfully"));
@@ -110,6 +106,20 @@ public class UserController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("message", "User updated successfully"));
+    }
+
+    @GetMapping("/getLoggedInProfilePicture")
+    public ResponseEntity<Object> getLoggedInProfilePicture(@RequestParam String token) {
+        String username = jwtService.extractUsername(token);
+        UserEntity user = userService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "User not found"));
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("profilePicture", user.getProfilePicture()));
     }
 
 }

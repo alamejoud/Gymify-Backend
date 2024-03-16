@@ -46,7 +46,28 @@ NOCACHE;
 INSERT INTO G_USERS VALUES (G_USERS_SEQ.NEXTVAL, 'admin', 'admin', 'admin', 'admin', 'admin@gymify.com', '01/1234567', 'Tayouneh, Beirut', 'Beirut', 'admin', 'active', 0, SYSDATE, 0, SYSDATE);
 INSERT INTO G_USERS VALUES (G_USERS_SEQ.NEXTVAL, 'alamejoud', 'joud@1234', 'Joud', 'Alameh', 'joudalame@gymify.com', '03/827342', 'Tayouneh, Beirut', 'Beirut', 'trainer', 'active', 1, SYSDATE, 1, SYSDATE);
 INSERT INTO G_USERS VALUES (G_USERS_SEQ.NEXTVAL, 'alamerami', 'rami@1234', 'Rami', 'Alameh', 'ramialame@gymify.com', '70/102948', 'Tayouneh, Beirut', 'Beirut', 'trainee', 'active', 1, SYSDATE, 1, SYSDATE);
-INSERT INTO G_USERS VALUES (G_USERS_SEQ.NEXTVAL, 'alamehassan', 'hassan@1234', 'Hassan', 'Alameh', 'hassanalame@gymify.com', '71/764902', 'Hamra, Beirut', 'Beirut', 'trainee', 'active', 1, SYSDATE, 1, SYSDATE);]]></console>
+INSERT INTO G_USERS VALUES (G_USERS_SEQ.NEXTVAL, 'alamehassan', 'hassan@1234', 'Hassan', 'Alameh', 'hassanalame@gymify.com', '71/764902', 'Hamra, Beirut', 'Beirut', 'trainee', 'active', 1, SYSDATE, 1, SYSDATE);
+
+CREATE TABLE G_EXERCISES_STA (
+	EXERCISE_ID NUMBER NOT NULL,
+	EXERCISE_NAME VARCHAR(4000) NOT NULL,
+	EQUIPMENT VARCHAR(4000) NOT NULL,
+    EXERCISE_TYPE VARCHAR(4000) NOT NULL,
+    MAJOR_MUSCLE VARCHAR(4000) NOT NULL,
+    MINOR_MUSCLE VARCHAR(4000) NOT NULL,
+    NOTES VARCHAR(4000) NOT NULL,
+    MODIFICATIONS VARCHAR(4000) NOT NULL,
+    PRIMARY KEY (EXERCISE_ID)	
+)
+
+CREATE TABLE G_EXERCISES (
+	EXERCISE_ID NUMBER NOT NULL,
+	EXERCISE_NAME VARCHAR(4000) NOT NULL,
+	MAJOR_MUSCLE VARCHAR(4000) NOT NULL,
+	NOTES VARCHAR(4000) NOT NULL,
+	MODIFICATIONS VARCHAR(4000) NOT NULL,
+	PRIMARY KEY (EXERCISE_ID)
+)]]></console>
     </connection>
     <connection id="bd498cd0-f6ac-4def-9d90-b23e4adca879">
       <console name="joudalame" type="STANDARD" schema="" session="Main" />

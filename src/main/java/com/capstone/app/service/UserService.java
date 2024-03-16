@@ -48,9 +48,6 @@ public class UserService implements UserServiceInterface{
             return true;
         };
         if (bCryptService.verifyAndUpdateHash(password, userEntity.getPassword(), update)) {
-            userEntity.setPassword(mutableHash[0]);
-            userEntity.setCity("New York");
-            userRepository.updateUser(userEntity);
             return true;
         }
 

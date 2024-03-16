@@ -49,7 +49,7 @@ public class UserEntity {
     private String title;
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "PROFILE_PICTURE")
+    @Column(name = "PROFILE_PICTURE", columnDefinition = "BLOB")
     private byte[] profilePicture;
 
 }
