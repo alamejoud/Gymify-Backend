@@ -1,13 +1,12 @@
 package com.capstone.app.controller;
 
+import com.capstone.app.entity.ExerciseEntity;
 import com.capstone.app.service.JwtService;
+import com.capstone.app.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.capstone.app.service.ExerciseServiceInterface;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
@@ -21,23 +20,43 @@ public class ExerciseController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("/getExerciseMuscles")
-    public ResponseEntity<Object> getExerciseTypes(@RequestParam String token) {
-        if (jwtService.extractExpiration(token).before(new Date())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("message", "Token has expired"));
+    @GetMapping("/getExerciseCategories")
+    public ResponseEntity<Object> getExerciseCategories(@RequestHeader("Authorization") String token, @RequestParam String group) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseMuscles", exerciseService.getExerciseMuscles()));
+        if (group.equals("muscle")) {
+            return ResponseEntity.ok().body(Map.of("exerciseCategories", exerciseService.getExerciseMuscles()));
+        } else if (group.equals("equipment")) {
+            return ResponseEntity.ok().body(Map.of("exerciseCategories", exerciseService.getExerciseEquipments()));
+        } else if (group.equals("type")) {
+            return ResponseEntity.ok().body(Map.of("exerciseCategories", exerciseService.getExerciseTypes()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid category"));
+        }
     }
 
     @GetMapping("/getExerciseList")
-    public ResponseEntity<Object> getExerciseList(@RequestParam String muscleId, @RequestParam String token) {
-        if (jwtService.extractExpiration(token).before(new Date())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("message", "Token has expired"));
+    public ResponseEntity<Object> getExerciseList(@RequestParam String muscleId, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
         return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseList(muscleId)));
+    }
+
+    @GetMapping("/getExerciseGroups")
+    public ResponseEntity<Object> getExerciseGroups(@RequestHeader("Authorization") String token){
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("exerciseGroups", exerciseService.getExerciseGroups()));
+    }
+
+    @GetMapping("filterExercises")
+    public ResponseEntity<Object> filterExercises(@RequestParam String exerciseName, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.filterExercises(exerciseName)));
     }
 }

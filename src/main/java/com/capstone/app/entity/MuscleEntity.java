@@ -23,7 +23,7 @@ public class MuscleEntity {
     @Column(name = "MUSCLE_NAME")
     private String muscleName;
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic
     @Column(name = "MUSCLE_PICTURE", columnDefinition = "BLOB")
     private byte[] musclePicture;
 }

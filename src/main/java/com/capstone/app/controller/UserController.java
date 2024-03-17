@@ -4,6 +4,7 @@ import com.capstone.app.exception.UserAlreadyExistsException;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.service.JwtService;
 import com.capstone.app.service.UserServiceInterface;
+import com.capstone.app.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -66,11 +67,9 @@ public class UserController {
     }
 
     @GetMapping("/getLoggedInUser")
-    public ResponseEntity<Object> getLoggedInUser(@RequestParam String token) {
-        if (jwtService.extractExpiration(token).before(new Date())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("message", "Token has expired"));
+    public ResponseEntity<Object> getLoggedInUser(@RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
         String username = jwtService.extractUsername(token);
         UserEntity user = userService.getUserByUsername(username);
@@ -85,11 +84,9 @@ public class UserController {
     }
 
     @PostMapping("/uploadProfilePicture")
-    public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("token") String token) throws IOException, SQLException {
-        if (jwtService.extractExpiration(token).before(new Date())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("message", "Token has expired"));
+    public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) throws IOException, SQLException {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
         String username = jwtService.extractUsername(token);
         UserEntity user = userService.getUserByUsername(username);
@@ -101,7 +98,10 @@ public class UserController {
     }
 
     @PutMapping("/updateUser")
-    public ResponseEntity<Object> updateUser(@RequestBody UserEntity user) {
+    public ResponseEntity<Object> updateUser(@RequestBody UserEntity user, @RequestHeader("Authorization") String token){
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
         userService.updateUser(user);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,10 @@ public class UserController {
     }
 
     @GetMapping("/getLoggedInProfilePicture")
-    public ResponseEntity<Object> getLoggedInProfilePicture(@RequestParam String token) {
+    public ResponseEntity<Object> getLoggedInProfilePicture(@RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
         String username = jwtService.extractUsername(token);
         UserEntity user = userService.getUserByUsername(username);
         if (user == null) {
