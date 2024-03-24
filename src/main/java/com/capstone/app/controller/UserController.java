@@ -125,4 +125,13 @@ public class UserController {
                 .body(Map.of("profilePicture", user.getProfilePicture()));
     }
 
+    @PostMapping("/generateToken")
+    public ResponseEntity<Object> generateToken(@RequestBody UserEntity user, @RequestHeader("Authorization") String token){
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", jwtService.generateToken(user.getUsername()));
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
 }

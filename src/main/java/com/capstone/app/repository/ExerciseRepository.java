@@ -1,17 +1,16 @@
 package com.capstone.app.repository;
 
 import com.capstone.app.entity.*;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,9 +39,30 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
     }
 
     @Override
-    public List<ExerciseEntity> getExerciseList(String muscleId) {
+    public List<ExerciseEntity> getExerciseByMuscle(String muscleId) {
         String query = "SELECT e FROM ExerciseEntity e join e.majorMuscle m where m.muscleId = :majorMuscleId union all select e from ExerciseEntity e join e.minorMuscles m where m.muscleId = :minorMuscleId";
         List<ExerciseEntity> exercises = entityManager.createQuery(query, ExerciseEntity.class).setParameter("majorMuscleId", muscleId).setParameter("minorMuscleId", muscleId).getResultList();
+        return exercises;
+    }
+
+    @Override
+    public List<ExerciseEntity> getExerciseByEquipment(String equipmentId) {
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee where ee.equipmentId = :equipmentId", ExerciseEntity.class).setParameter("equipmentId", equipmentId).getResultList();
+        return exercises;
+    }
+
+    @Override
+    public List<ExerciseEntity> getExerciseByType(String typeId) {
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t where t.typeId = :typeId", ExerciseEntity.class).setParameter("typeId", typeId).getResultList();
+        return exercises;
+    }
+
+    @Override
+    public List<ExerciseEntity> getExerciseBySearch(String search) {
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
+        if (exercises.isEmpty()) {
+            return Collections.emptyList();
+        }
         return exercises;
     }
 
@@ -54,22 +74,30 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
 
     @Override
     public List<ExerciseEntity> filterExercises(String exerciseName) {
-        if (exerciseName == null || exerciseName.trim().isEmpty()) {
-            return Collections.emptyList();
+        List<ExerciseEntity> exercises = getExerciseBySearch(exerciseName);
+        if (exercises.size() < 4) {
+            return exercises;
+        } else {
+            return exercises.subList(0, 4);
         }
-//        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-//        JPAQuery<?> query = queryFactory.selectFrom(QExerciseEntity.exerciseEntity).where(QExerciseEntity.exerciseEntity.exerciseName.contains(exerciseName));
-        CriteriaBuilder qb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ExerciseEntity> cq = qb.createQuery(ExerciseEntity.class);
+    }
 
-        Root<ExerciseEntity> root = cq.from(ExerciseEntity.class);
-        cq.where( qb.or(
-                qb.like(root.get("exerciseName"), qb.parameter(String.class, "exerciseName"))
-        ));
-        Query query = entityManager.createQuery(cq);
-        query.setParameter("exerciseName", "%" + exerciseName + "%");
-        List<ExerciseEntity> exercises = query.getResultList().subList(0, 5);
-        return exercises;
+    @Override
+    public String getMuscleName(String muscleId) {
+        MuscleEntity muscle = entityManager.find(MuscleEntity.class, muscleId);
+        return muscle.getMuscleName();
+    }
+
+    @Override
+    public String getEquipmentName(String equipmentId) {
+        EquipmentEntity equipment = entityManager.find(EquipmentEntity.class, equipmentId);
+        return equipment.getEquipmentName();
+    }
+
+    @Override
+    public String getTypeName(String typeId) {
+        TypeEntity type = entityManager.find(TypeEntity.class, typeId);
+        return type.getTypeName();
     }
 
 }

@@ -51,4 +51,9 @@ public class ExerciseEntity {
             inverseJoinColumns = { @JoinColumn(name = "TYPE_ID") }
     )
     private List<TypeEntity> types;
+    @Column(name = "VIDEO_LINK")
+    private String videoLink;
+    @ManyToOne
+    @JoinColumn(name = "CREATED_BY")
+    private UserEntity createdBy;
 }
