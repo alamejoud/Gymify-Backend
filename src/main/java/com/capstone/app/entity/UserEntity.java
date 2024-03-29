@@ -1,11 +1,16 @@
 package com.capstone.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
 import org.hibernate.annotations.Formula;
 
 import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Transactional
@@ -51,5 +56,9 @@ public class UserEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "PROFILE_PICTURE", columnDefinition = "BLOB")
     private byte[] profilePicture;
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdBy")
+    private List<ExerciseEntity> createdExercises = new ArrayList<>();
 
 }

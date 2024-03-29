@@ -1,14 +1,12 @@
 package com.capstone.app.controller;
 
 import com.capstone.app.entity.ExerciseEntity;
-import com.capstone.app.service.JwtService;
 import com.capstone.app.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.capstone.app.service.ExerciseServiceInterface;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +15,6 @@ import java.util.Map;
 public class ExerciseController {
     @Autowired
     private ExerciseServiceInterface exerciseService;
-    @Autowired
-    private JwtService jwtService;
 
     @GetMapping("/getExerciseCategories")
     public ResponseEntity<Object> getExerciseCategories(@RequestHeader("Authorization") String token, @RequestParam String group) {
@@ -41,7 +37,7 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByMuscle(muscleId)));
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByMuscle(muscleId, token)));
     }
 
     @GetMapping("/getExercisesByEquipment")
@@ -49,7 +45,7 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByEquipment(equipmentId)));
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByEquipment(equipmentId, token)));
     }
 
     @GetMapping("/getExercisesByType")
@@ -57,7 +53,7 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByType(typeId)));
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseByType(typeId, token)));
     }
 
     @GetMapping("/getExercisesBySearch")
@@ -65,7 +61,7 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseBySearch(search)));
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseBySearch(search, token)));
     }
 
     @GetMapping("/getExerciseGroups")
@@ -81,7 +77,31 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.filterExercises(exerciseName)));
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.filterExercises(exerciseName, token)));
+    }
+
+    @GetMapping("/filterMuscles")
+    public ResponseEntity<Object> filterMuscles(@RequestParam String muscleName, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("muscleList", exerciseService.filterMuscles(muscleName)));
+    }
+
+    @GetMapping("/filterEquipments")
+    public ResponseEntity<Object> filterEquipments(@RequestParam String equipmentName, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("equipmentList", exerciseService.filterEquipments(equipmentName)));
+    }
+
+    @GetMapping("/filterTypes")
+    public ResponseEntity<Object> filterTypes(@RequestParam String typeName, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("typeList", exerciseService.filterTypes(typeName)));
     }
 
     @GetMapping("/getMuscleName")
@@ -114,13 +134,13 @@ public class ExerciseController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
         if (group.equals("muscle")) {
-            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByMuscle(id).size()));
+            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByMuscle(id, token).size()));
         } else if (group.equals("equipment")) {
-            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByEquipment(id).size()));
+            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByEquipment(id, token).size()));
         } else if (group.equals("type")) {
-            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByType(id).size()));
+            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseByType(id, token).size()));
         } else if (group.equals("search")) {
-            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseBySearch(id).size()));
+            return ResponseEntity.ok().body(Map.of("exerciseCount", exerciseService.getExerciseBySearch(id, token).size()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid category"));
         }
@@ -131,9 +151,9 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        List<ExerciseEntity> exercises = exerciseService.getExerciseByMuscle(muscleId);
+        List<ExerciseEntity> exercises = exerciseService.getExerciseByMuscle(muscleId, token);
         if (first >= exercises.size()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid first value"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "No Results Found"));
         }
         if (first + size > exercises.size()) {
             return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, exercises.size())));
@@ -146,9 +166,9 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        List<ExerciseEntity> exercises = exerciseService.getExerciseByEquipment(equipmentId);
+        List<ExerciseEntity> exercises = exerciseService.getExerciseByEquipment(equipmentId, token);
         if (first >= exercises.size()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid first value"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "No Results Found"));
         }
         if (first + size > exercises.size()) {
             return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, exercises.size())));
@@ -161,9 +181,9 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        List<ExerciseEntity> exercises = exerciseService.getExerciseByType(typeId);
+        List<ExerciseEntity> exercises = exerciseService.getExerciseByType(typeId, token);
         if (first >= exercises.size()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid first value"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "No Results Found"));
         }
         if (first + size > exercises.size()) {
             return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, exercises.size())));
@@ -176,14 +196,47 @@ public class ExerciseController {
         if (!CommonUtil.authenticateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
         }
-        List<ExerciseEntity> exercises = exerciseService.getExerciseBySearch(search);
+        List<ExerciseEntity> exercises = exerciseService.getExerciseBySearch(search, token);
         if (first >= exercises.size()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid first value"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "No Results Found"));
         }
         if (first + size > exercises.size()) {
             return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, exercises.size())));
         }
         return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, first + size)));
+    }
+
+    @PostMapping("/saveExercise")
+    public ResponseEntity<Object> saveExercise(@RequestBody ExerciseEntity exercise, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        if (exercise.getMinorMuscles().stream().anyMatch(muscle -> muscle.getMuscleId() == exercise.getMajorMuscle().getMuscleId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "You cannot select the same muscle as major and minor muscle. Please select a different muscle."));
+        }
+        exerciseService.saveExercise(exercise, token);
+        return ResponseEntity.ok().body(Map.of("message", "Exercise saved successfully"));
+    }
+
+    @DeleteMapping("/deleteExercise")
+    public ResponseEntity<Object> deleteExercise(@RequestParam int exerciseId, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        exerciseService.deleteExercise(exerciseId);
+        return ResponseEntity.ok().body(Map.of("message", "Exercise deleted successfully"));
+    }
+
+    @GetMapping("/getExerciseById")
+    public ResponseEntity<Object> getExerciseById(@RequestParam int exerciseId, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        ExerciseEntity exercise = exerciseService.getExerciseById(exerciseId);
+        if (exercise == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Exercise not found"));
+        }
+        return ResponseEntity.ok().body(Map.of("exercise", exercise));
     }
 
 }

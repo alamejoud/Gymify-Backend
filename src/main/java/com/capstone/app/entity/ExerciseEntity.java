@@ -2,16 +2,15 @@ package com.capstone.app.entity;
 
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Transactional
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "G_EXERCISES")
@@ -20,40 +19,82 @@ public class ExerciseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "G_EXERCISES_SEQ")
     @SequenceGenerator(name = "G_EXERCISES_SEQ", sequenceName = "G_EXERCISES_SEQ", allocationSize = 1)
     @Column(name = "EXERCISE_ID")
+    @Getter
+    @Setter
     private int exerciseId;
     @Column(name = "EXERCISE_NAME")
+    @Getter
+    @Setter
     private String exerciseName;
     @ManyToOne
     @JoinColumn(name = "MAJOR_MUSCLE_ID")
+    @Getter
+    @Setter
     private MuscleEntity majorMuscle;
     @Column(name = "NOTES")
+    @Getter
+    @Setter
     private String notes;
     @Column(name = "MODIFICATIONS")
+    @Getter
+    @Setter
     private String modifications;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = {
+            CascadeType.MERGE
+    })
     @JoinTable(
             name = "G_EXERCISE_Equipments",
             joinColumns = { @JoinColumn(name = "EXERCISE_ID") },
             inverseJoinColumns = { @JoinColumn(name = "EQUIPMENT_ID") }
     )
-    private List<EquipmentEntity> equipments;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @Getter
+    private List<EquipmentEntity> equipments = new ArrayList<>();
+    @ToString.Exclude
+    @ManyToMany(cascade = {
+            CascadeType.MERGE
+    })
     @JoinTable(
             name = "G_EXERCISE_MINOR_MUSCLES",
             joinColumns = { @JoinColumn(name = "EXERCISE_ID") },
             inverseJoinColumns = { @JoinColumn(name = "MINOR_MUSCLE_ID") }
     )
-    private Set<MuscleEntity> minorMuscles;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @Getter
+    private List<MuscleEntity> minorMuscles = new ArrayList<>();
+    @ToString.Exclude
+    @ManyToMany(cascade = {
+            CascadeType.MERGE
+    })
     @JoinTable(
             name = "G_EXERCISE_TYPES",
             joinColumns = { @JoinColumn(name = "EXERCISE_ID") },
             inverseJoinColumns = { @JoinColumn(name = "TYPE_ID") }
     )
-    private List<TypeEntity> types;
+    @Getter
+    private List<TypeEntity> types = new ArrayList<>();
     @Column(name = "VIDEO_LINK")
+    @Getter
+    @Setter
     private String videoLink;
     @ManyToOne
     @JoinColumn(name = "CREATED_BY")
+    @Getter
+    @Setter
     private UserEntity createdBy;
+
+    public void setEquipments(List<EquipmentEntity> equipments) {
+        this.equipments.clear();
+        equipments.forEach(equipment -> this.equipments.add(equipment));
+        equipments.forEach(equipment -> equipment.getExercises().add(this));
+    }
+    public void setMinorMuscles(List<MuscleEntity> minorMuscles) {
+        this.minorMuscles.clear();
+        minorMuscles.forEach(muscle -> this.minorMuscles.add(muscle));
+        minorMuscles.forEach(muscle -> muscle.getMinorExercises().add(this));
+    }
+    public void setTypes(List<TypeEntity> types) {
+        this.types.clear();
+        types.forEach(type -> this.types.add(type));
+        types.forEach(type -> type.getExercises().add(this));
+    }
+
 }

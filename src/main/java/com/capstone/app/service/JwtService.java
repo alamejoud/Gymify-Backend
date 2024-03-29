@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,7 +16,8 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
-
+    @Autowired
+    private UserService userService;
     public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
@@ -23,6 +25,11 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
+        UserEntity user = userService.getUserByUsername(userName);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("userId", user.getUserId());
+        payload.put("role", user.getRole());
+        claims.put("payload", payload);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
@@ -67,5 +74,9 @@ public class JwtService {
         return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
+    public static String extractRole(String token) {
+        Map<String, Object> payload = (Map<String, Object>) new JwtService().extractClaim(token, claims -> (Map<String, Object>) claims.get("payload"));
+        return (String) payload.get("role");
+    }
 
 }

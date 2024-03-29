@@ -6,6 +6,12 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Transactional
@@ -25,4 +31,8 @@ public class TypeEntity {
     @Basic
     @Column(name = "TYPE_PICTURE", columnDefinition = "BLOB")
     private byte[] typePicture;
+    @ToString.Exclude
+    @JsonIgnore
+    @ManyToMany(mappedBy = "types")
+    private List<ExerciseEntity> exercises = new ArrayList<>();
 }

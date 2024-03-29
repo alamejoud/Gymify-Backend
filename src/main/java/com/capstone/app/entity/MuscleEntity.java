@@ -1,11 +1,16 @@
 package com.capstone.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,4 +31,12 @@ public class MuscleEntity {
     @Basic
     @Column(name = "MUSCLE_PICTURE", columnDefinition = "BLOB")
     private byte[] musclePicture;
+    @ToString.Exclude
+    @JsonIgnore
+    @ManyToMany(mappedBy = "minorMuscles")
+    private Set<ExerciseEntity> minorExercises = new HashSet<>();
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "majorMuscle")
+    private List<ExerciseEntity> majorExercises = new ArrayList<>();
 }

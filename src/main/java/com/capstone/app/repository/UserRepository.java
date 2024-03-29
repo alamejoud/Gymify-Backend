@@ -57,7 +57,7 @@ public class UserRepository implements UserRepositoryInterface{
     @Override
     public void updateUser(UserEntity userEntity) {
         try {
-            entityManager.merge(userEntity);
+            entityManager.persist(userEntity);
         } catch (Exception e) {
             e.printStackTrace();
         }
