@@ -60,7 +60,7 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
     @Override
     public List<ExerciseEntity> getExerciseByEquipment(String equipmentId, String username, String role) {
         if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee join e.createdBy c where ee.equipmentId = :equipmentId and c.username = :username", ExerciseEntity.class).setParameter("equipmentId", equipmentId).setParameter("username", username).getResultList();
+            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee join e.createdBy c where ee.equipmentId = :equipmentId and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("equipmentId", equipmentId).setParameter("username", username).getResultList();
             if (exercises.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -77,7 +77,7 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
     @Override
     public List<ExerciseEntity> getExerciseByType(String typeId, String username, String role) {
         if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t join e.createdBy c where t.typeId = :typeId and c.username = :username", ExerciseEntity.class).setParameter("typeId", typeId).setParameter("username", username).getResultList();
+            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t join e.createdBy c where t.typeId = :typeId and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("typeId", typeId).setParameter("username", username).getResultList();
             if (exercises.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -94,16 +94,10 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
     @Override
     public List<ExerciseEntity> getExerciseBySearch(String search, String username, String role) {
         if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.createdBy c where e.exerciseName like :search and c.username = :username", ExerciseEntity.class).setParameter("search", "%" + search + "%").setParameter("username", username).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
+            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.createdBy c where lower(e.exerciseName) like lower(:search) and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("search", "%" + search + "%").setParameter("username", username).getResultList();
             return exercises;
         } else {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where e.exerciseName like :search", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
+            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
             return exercises;
         }
     }
@@ -126,19 +120,19 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
 
     @Override
     public List<MuscleEntity> filterMuscles(String muscleName) {
-        List<MuscleEntity> muscles = entityManager.createQuery("SELECT m FROM MuscleEntity m where lower(m.muscleName) like :muscleName", MuscleEntity.class).setParameter("muscleName", "%" + muscleName.toLowerCase() + "%").getResultList();
+        List<MuscleEntity> muscles = entityManager.createQuery("SELECT m FROM MuscleEntity m where lower(m.muscleName) like lower(:muscleName)", MuscleEntity.class).setParameter("muscleName", "%" + muscleName.toLowerCase() + "%").getResultList();
         return muscles;
     }
 
     @Override
     public List<EquipmentEntity> filterEquipments(String equipmentName) {
-        List<EquipmentEntity> equipments = entityManager.createQuery("SELECT e FROM EquipmentEntity e where  lower(e.equipmentName) like :equipmentName", EquipmentEntity.class).setParameter("equipmentName", "%" + equipmentName.toLowerCase() + "%").getResultList();
+        List<EquipmentEntity> equipments = entityManager.createQuery("SELECT e FROM EquipmentEntity e where  lower(e.equipmentName) like lower(:equipmentName)", EquipmentEntity.class).setParameter("equipmentName", "%" + equipmentName.toLowerCase() + "%").getResultList();
         return equipments;
     }
 
     @Override
     public List<TypeEntity> filterTypes(String typeName) {
-        List<TypeEntity> types = entityManager.createQuery("SELECT t FROM TypeEntity t where  lower(t.typeName) like :typeName", TypeEntity.class).setParameter("typeName", "%" + typeName.toLowerCase() + "%").getResultList();
+        List<TypeEntity> types = entityManager.createQuery("SELECT t FROM TypeEntity t where  lower(t.typeName) like lower(:typeName)", TypeEntity.class).setParameter("typeName", "%" + typeName.toLowerCase() + "%").getResultList();
         return types;
     }
 
@@ -181,6 +175,12 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
     public ExerciseEntity getExerciseById(int equipmentId) {
         ExerciseEntity exercise = entityManager.find(ExerciseEntity.class, equipmentId);
         return exercise;
+    }
+
+    @Override
+    public List<ExerciseEntity> getExerciseList() {
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e", ExerciseEntity.class).getResultList();
+        return exercises;
     }
 
 }

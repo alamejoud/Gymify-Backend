@@ -239,4 +239,12 @@ public class ExerciseController {
         return ResponseEntity.ok().body(Map.of("exercise", exercise));
     }
 
+    @GetMapping("/getExerciseList")
+    public ResponseEntity<Object> getExerciseList(@RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("exerciseList", exerciseService.getExerciseList()));
+    }
+
 }

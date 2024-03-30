@@ -26,4 +26,5 @@ public interface ExerciseRepositoryInterface {
     public void saveExercise(ExerciseEntity exercise);
     public void deleteExercise(int exerciseId);
     public ExerciseEntity getExerciseById(int equipmentId);
+    public List<ExerciseEntity> getExerciseList();
 }

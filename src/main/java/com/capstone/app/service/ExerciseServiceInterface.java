@@ -23,4 +23,5 @@ public interface ExerciseServiceInterface {
     public void saveExercise(ExerciseEntity exercise, String token);
     public void deleteExercise(int exerciseId);
     public ExerciseEntity getExerciseById(int equipmentId);
+    public List<ExerciseEntity> getExerciseList();
 }

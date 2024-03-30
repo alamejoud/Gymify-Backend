@@ -112,4 +112,9 @@ public class ExerciseService implements ExerciseServiceInterface{
         return exerciseRepository.getExerciseById(equipmentId);
     }
 
+    @Override
+    public List<ExerciseEntity> getExerciseList() {
+        return exerciseRepository.getExerciseList();
+    }
+
 }

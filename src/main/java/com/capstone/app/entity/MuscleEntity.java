@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Transactional
@@ -34,7 +32,7 @@ public class MuscleEntity {
     @ToString.Exclude
     @JsonIgnore
     @ManyToMany(mappedBy = "minorMuscles")
-    private Set<ExerciseEntity> minorExercises = new HashSet<>();
+    private List<ExerciseEntity> minorExercises = new ArrayList<>();
     @ToString.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "majorMuscle")
