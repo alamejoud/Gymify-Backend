@@ -93,16 +93,32 @@ public class UserEntity {
     @Getter
     @Setter
     private List<ExerciseEntity> createdExercises = new ArrayList<>();
-    @ManyToMany(cascade = {
-            CascadeType.MERGE
-    })
-    @JoinTable(
-            name = "G_USER_WORKOUTS",
-            joinColumns = { @JoinColumn(name = "USER_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "WORKOUT_ID") }
-    )
+    @ToString.Exclude
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     @Getter
+    @Setter
     private List<WorkoutEntity> workouts = new ArrayList<>();
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "messageFrom")
+    @Getter
+    @Setter
+    private List<MessageEntity> sentMessages = new ArrayList<>();
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "messageTo")
+    @Getter
+    @Setter
+    private List<MessageEntity> receivedMessages = new ArrayList<>();
+    @Transient
+    @Getter
+    @Setter
+    private int unreadMessages;
+    @Transient
+    @Getter
+    @Setter
+    private MessageEntity lastMessage;
 
     public void setWorkouts(List<WorkoutEntity> workouts) {
         this.workouts.clear();

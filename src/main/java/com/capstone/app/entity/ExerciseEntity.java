@@ -79,6 +79,11 @@ public class ExerciseEntity {
     @Getter
     @Setter
     private UserEntity createdBy;
+    @OneToMany(mappedBy = "exercise")
+    @Getter
+    @Setter
+    @JsonIgnore
+    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();
 
     public void setEquipments(List<EquipmentEntity> equipments) {
         this.equipments.clear();

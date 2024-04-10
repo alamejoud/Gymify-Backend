@@ -7,6 +7,7 @@ import com.capstone.app.service.ExerciseServiceInterface;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -200,10 +201,15 @@ public class ExerciseController {
         if (first >= exercises.size()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "No Results Found"));
         }
+        Map<String, Object> result = new HashMap<>();
         if (first + size > exercises.size()) {
-            return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, exercises.size())));
+            result.put("exerciseList", exercises.subList(first, exercises.size()));
+            result.put("exerciseListSize", exercises.size());
+            return ResponseEntity.ok().body(result);
         }
-        return ResponseEntity.ok().body(Map.of("exerciseList", exercises.subList(first, first + size)));
+        result.put("exerciseList", exercises.subList(first, first + size));
+        result.put("exerciseListSize", exercises.size());
+        return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/saveExercise")

@@ -1,6 +1,7 @@
 package com.capstone.app.util;
 
 import com.capstone.app.service.JwtService;
+import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,9 @@ public class CommonUtil {
             return false;
         }
         return true;
+    }
+
+    public static <T> T convertStringToObject(String info, Class<T> clazz) {
+        return new Gson().fromJson(info, clazz);
     }
 }

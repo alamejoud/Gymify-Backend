@@ -6,12 +6,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -40,66 +34,27 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
 
     @Override
     public List<ExerciseEntity> getExerciseByMuscle(String muscleId, String username, String role) {
-        if (role.equals("trainer")) {
-            String query = "SELECT e FROM ExerciseEntity e join e.majorMuscle m join e.createdBy c where m.muscleId = :majorMuscleId and c.username = :username union all select e from ExerciseEntity e join e.minorMuscles m join e.createdBy c where m.muscleId = :minorMuscleId and c.username = :username";
-            List<ExerciseEntity> exercises = entityManager.createQuery(query, ExerciseEntity.class).setParameter("majorMuscleId", muscleId).setParameter("minorMuscleId", muscleId).setParameter("username", username).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        } else {
-            String query = "SELECT e FROM ExerciseEntity e join e.majorMuscle m where m.muscleId = :majorMuscleId union all select e from ExerciseEntity e join e.minorMuscles m where m.muscleId = :minorMuscleId";
-            List<ExerciseEntity> exercises = entityManager.createQuery(query, ExerciseEntity.class).setParameter("majorMuscleId", muscleId).setParameter("minorMuscleId", muscleId).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        }
+        String query = "SELECT e FROM ExerciseEntity e join e.majorMuscle m where m.muscleId = :majorMuscleId union all select e from ExerciseEntity e join e.minorMuscles m where m.muscleId = :minorMuscleId";
+        List<ExerciseEntity> exercises = entityManager.createQuery(query, ExerciseEntity.class).setParameter("majorMuscleId", muscleId).setParameter("minorMuscleId", muscleId).getResultList();
+        return exercises;
     }
 
     @Override
     public List<ExerciseEntity> getExerciseByEquipment(String equipmentId, String username, String role) {
-        if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee join e.createdBy c where ee.equipmentId = :equipmentId and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("equipmentId", equipmentId).setParameter("username", username).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        } else {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee where ee.equipmentId = :equipmentId", ExerciseEntity.class).setParameter("equipmentId", equipmentId).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        }
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.equipments ee where ee.equipmentId = :equipmentId", ExerciseEntity.class).setParameter("equipmentId", equipmentId).getResultList();
+        return exercises;
     }
 
     @Override
     public List<ExerciseEntity> getExerciseByType(String typeId, String username, String role) {
-        if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t join e.createdBy c where t.typeId = :typeId and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("typeId", typeId).setParameter("username", username).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        } else {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t where t.typeId = :typeId", ExerciseEntity.class).setParameter("typeId", typeId).getResultList();
-            if (exercises.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return exercises;
-        }
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.types t where t.typeId = :typeId", ExerciseEntity.class).setParameter("typeId", typeId).getResultList();
+        return exercises;
     }
 
     @Override
     public List<ExerciseEntity> getExerciseBySearch(String search, String username, String role) {
-        if (role.equals("trainer")) {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e join e.createdBy c where lower(e.exerciseName) like lower(:search) and lower(c.username) = lower(:username)", ExerciseEntity.class).setParameter("search", "%" + search + "%").setParameter("username", username).getResultList();
-            return exercises;
-        } else {
-            List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
-            return exercises;
-        }
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
+        return exercises;
     }
 
     @Override

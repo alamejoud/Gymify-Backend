@@ -43,6 +43,12 @@ public class UserController {
     public ResponseEntity<Object> login(@RequestBody UserEntity user) {
         Map<String, Object> response = new HashMap<>();
         if (userService.checkUser(user.getUsername(), user.getPassword())) {
+            if (userService.getUserByUsername(user.getUsername()).getStatus().equals("inactive")) {
+                response.put("message", "This account has been deactivated. Please contact the administrator.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(response);
+            }
             response.put("token", jwtService.generateToken(user.getUsername()));
             response.put("message", "Login successful");
             response.put("user", userService.getUserByUsername(user.getUsername()));

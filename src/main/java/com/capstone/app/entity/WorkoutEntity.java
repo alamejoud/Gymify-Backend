@@ -32,51 +32,55 @@ public class WorkoutEntity {
     @Getter
     @Setter
     private UserEntity createdBy;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 1")
     private List<WorkoutExerciseEntity> mondayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 2")
     private List<WorkoutExerciseEntity> tuesdayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 3")
     private List<WorkoutExerciseEntity> wednesdayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 4")
     private List<WorkoutExerciseEntity> thursdayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 5")
     private List<WorkoutExerciseEntity> fridayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 6")
     private List<WorkoutExerciseEntity> saturdayExercises = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "WORKOUT_ID")
     @Getter
     @Setter
     @Where(clause = "DAY = 7")
     private List<WorkoutExerciseEntity> sundayExercises = new ArrayList<>();
     @ToString.Exclude
-    @JsonIgnore
-    @ManyToMany(mappedBy = "workouts")
+    @ManyToMany
+    @JoinTable(
+            name = "G_USER_WORKOUTS",
+            joinColumns = { @JoinColumn(name = "WORKOUT_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "USER_ID") }
+    )
     @Getter
     @Setter
     private List<UserEntity> users = new ArrayList<>();
