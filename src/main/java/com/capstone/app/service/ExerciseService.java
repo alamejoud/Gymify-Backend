@@ -2,13 +2,9 @@ package com.capstone.app.service;
 
 import com.capstone.app.entity.*;
 import com.capstone.app.repository.ExerciseRepositoryInterface;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -16,7 +12,7 @@ public class ExerciseService implements ExerciseServiceInterface{
     @Autowired
     private ExerciseRepositoryInterface exerciseRepository;
     @Autowired
-    private UserService userService;
+    private UserServiceInterface userService;
     @Autowired
     private JwtService jwtService;
     @Override

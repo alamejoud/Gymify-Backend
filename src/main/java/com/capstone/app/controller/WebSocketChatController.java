@@ -31,8 +31,8 @@ public class WebSocketChatController {
         MessageInfo messageInfo = CommonUtil.convertStringToObject(info, MessageInfo.class);
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setMessage(messageInfo.message);
-        messageEntity.setMessageFrom(userService.getUserByUsername(jwtService.extractUsername(messageInfo.token)));
-        messageEntity.setMessageFromUsername(jwtService.extractUsername(messageInfo.token));
+        messageEntity.setMessageFrom(userService.getUserByUsername(jwtService.extractUsername(messageInfo.token).toLowerCase()));
+        messageEntity.setMessageFromUsername(jwtService.extractUsername(messageInfo.token).toLowerCase());
         messageEntity.setMessageTo(userService.getUserByUsername(messageInfo.recipient));
         messageEntity.setMessageToUsername(messageInfo.recipient);
         messageEntity.setMessageDate(new Date());
@@ -45,9 +45,12 @@ public class WebSocketChatController {
             }
             file.setMessage(messageEntity);
         });
+        chatService.markMessagesAsRead(messageInfo.token, messageInfo.recipient);
         chatService.saveMessage(messageEntity);
         messagingTemplate.convertAndSend("/message",  messageEntity);
     }
+
+
 
     private class MessageInfo {
 

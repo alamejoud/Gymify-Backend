@@ -10,7 +10,6 @@ public interface ChatServiceInterface {
     public void saveMessage(MessageEntity messageEntity);
     public List<MessageEntity> getMessages(String token, String username);
     public void markMessagesAsRead(String token, String username);
-    public int getUnreadMessages(String token, String username);
     public List<UserEntity> getContacts(String token, String role, String search);
     public int getUnreadChats(String token);
 }

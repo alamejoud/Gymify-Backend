@@ -2,6 +2,7 @@ package com.capstone.app.util;
 import com.capstone.app.entity.UserEntity;
 import com.capstone.app.service.JwtService;
 import com.capstone.app.service.UserService;
+import com.capstone.app.service.UserServiceInterface;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Autowired
-    private UserService userService;
+    private UserServiceInterface userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

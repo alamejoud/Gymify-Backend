@@ -62,14 +62,6 @@ public class ChatController {
         return ResponseEntity.ok(Map.of("message", "Messages marked as read."));
     }
 
-    @GetMapping("/getUnreadMessages")
-    public ResponseEntity<Object> getUnreadMessages(@RequestHeader("Authorization") String token, @RequestParam String username) {
-        if (!CommonUtil.authenticateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
-        }
-        return ResponseEntity.ok(Map.of("unreadMessages", chatService.getUnreadMessages(token, username)));
-    }
-
     @GetMapping("/getUnreadChats")
     public ResponseEntity<Object> getUnreadChats(@RequestHeader("Authorization") String token) {
         if (!CommonUtil.authenticateToken(token)) {
@@ -77,4 +69,32 @@ public class ChatController {
         }
         return ResponseEntity.ok(Map.of("unreadChats", chatService.getUnreadChats(token)));
     }
+
+    @PostMapping("/changes")
+    public void handleChangeNotification(@RequestBody ChangeNotification notification) {
+        // Handle the change notification
+        System.out.println("Received change notification: " + notification);
+        // Take appropriate actions based on the change notification
+        // For example, updating the frontend, processing the message, etc.
+    }
+
+    public class ChangeNotification {
+        private Long messageId;
+        private String oldContent; // May be null for INSERT operations
+        private String newContent;
+        private String changeTime;
+
+        // Getters and setters
+
+        @Override
+        public String toString() {
+            return "ChangeNotification{" +
+                    "messageId=" + messageId +
+                    ", oldContent='" + oldContent + '\'' +
+                    ", newContent='" + newContent + '\'' +
+                    ", changeTime='" + changeTime + '\'' +
+                    '}';
+        }
+    }
+
 }

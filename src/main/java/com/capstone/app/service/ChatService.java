@@ -20,11 +20,11 @@ public class ChatService implements ChatServiceInterface{
     public List<UserEntity> getContacts(String token, String role, String search) {
         List<UserEntity> contacts = chatRepository.getContacts(jwtService.extractUsername(token), role, search);
         contacts.forEach(contact -> {
-            contact.setUnreadMessages(chatRepository.getUnreadMessages(jwtService.extractUsername(token), contact.getUsername()));
+            contact.setUnreadMessages((int) contact.getSentMessages().stream().filter(message -> message.getMessageTo().getUsername().toLowerCase().equals(jwtService.extractUsername(token).toLowerCase()) && message.getMessageStatus().equals("sent")).count());
         });
         contacts.forEach(contact -> {
-            MessageEntity lastSentMessage = contact.getSentMessages().stream().filter(message -> message.getMessageTo().getUsername().equals(jwtService.extractUsername(token))).max((m1, m2) -> m1.getMessageDate().compareTo(m2.getMessageDate())).orElse(null);
-            MessageEntity lastReceivedMessage = contact.getReceivedMessages().stream().filter(message -> message.getMessageFrom().getUsername().equals(jwtService.extractUsername(token))).max((m1, m2) -> m1.getMessageDate().compareTo(m2.getMessageDate())).orElse(null);
+            MessageEntity lastSentMessage = contact.getSentMessages().stream().filter(message -> message.getMessageTo().getUsername().toLowerCase().equals(jwtService.extractUsername(token).toLowerCase())).max((m1, m2) -> m1.getMessageDate().compareTo(m2.getMessageDate())).orElse(null);
+            MessageEntity lastReceivedMessage = contact.getReceivedMessages().stream().filter(message -> message.getMessageFrom().getUsername().toLowerCase().equals(jwtService.extractUsername(token).toLowerCase())).max((m1, m2) -> m1.getMessageDate().compareTo(m2.getMessageDate())).orElse(null);
             if (lastSentMessage != null && lastReceivedMessage != null) {
                 contact.setLastMessage(lastSentMessage.getMessageDate().compareTo(lastReceivedMessage.getMessageDate()) > 0 ? lastSentMessage : lastReceivedMessage);
             } else if (lastSentMessage != null) {
@@ -56,8 +56,4 @@ public class ChatService implements ChatServiceInterface{
         chatRepository.markMessagesAsRead(jwtService.extractUsername(token), username);
     }
 
-    @Override
-    public int getUnreadMessages(String token, String username) {
-        return chatRepository.getUnreadMessages(jwtService.extractUsername(token), username);
-    }
 }

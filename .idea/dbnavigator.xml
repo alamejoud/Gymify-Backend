@@ -121,7 +121,9 @@ CREATE TABLE G_MESSAGE_FILES(
     FILE_ICON VARCHAR(50) NOT NULL,
     PRIMARY KEY (FILE_ID),
     FOREIGN KEY (MESSAGE_ID) REFERENCES G_MESSAGES(MESSAGE_ID)
-)]]></console>
+)
+
+UPDATE TABLE G_RECIPES_STA SET]]></console>
     </connection>
     <connection id="bd498cd0-f6ac-4def-9d90-b23e4adca879">
       <console name="joudalame" type="STANDARD" schema="" session="Main" />
@@ -243,6 +245,7 @@ CREATE TABLE G_MESSAGE_FILES(
           <debugger-type value="ASK" />
         </debugger>
         <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
+          <object-filters />
           <object-type-filter use-master-settings="true">
             <object-type name="SCHEMA" enabled="true" />
             <object-type name="USER" enabled="true" />
@@ -270,7 +273,6 @@ CREATE TABLE G_MESSAGE_FILES(
             <object-type name="CLUSTER" enabled="true" />
             <object-type name="DBLINK" enabled="true" />
           </object-type-filter>
-          <object-name-filters />
         </object-filters>
       </connection>
       <connection id="bd498cd0-f6ac-4def-9d90-b23e4adca879" active="true" signed="true">
@@ -337,6 +339,7 @@ CREATE TABLE G_MESSAGE_FILES(
           <debugger-type value="ASK" />
         </debugger>
         <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
+          <object-filters />
           <object-type-filter use-master-settings="true">
             <object-type name="SCHEMA" enabled="true" />
             <object-type name="USER" enabled="true" />
@@ -364,7 +367,6 @@ CREATE TABLE G_MESSAGE_FILES(
             <object-type name="CLUSTER" enabled="true" />
             <object-type name="DBLINK" enabled="true" />
           </object-type-filter>
-          <object-name-filters />
         </object-filters>
       </connection>
     </connections>

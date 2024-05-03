@@ -14,7 +14,7 @@ public class WorkoutService implements WorkoutServiceInterface{
     @Autowired
     private WorkoutRepositoryInterface workoutRepository;
     @Autowired
-    private UserService userService;
+    private UserServiceInterface userService;
     @Autowired
     private JwtService jwtService;
 
@@ -26,7 +26,7 @@ public class WorkoutService implements WorkoutServiceInterface{
     @Override
     public void saveWorkout(WorkoutEntity workout, String token) {
         workout.setCreatedBy(userService.getUserByUsername(jwtService.extractUsername(token)));
-        if (workout.getUsers().stream().noneMatch(user -> user.getUsername().equals(jwtService.extractUsername(token)))) {
+        if (workout.getUsers().stream().noneMatch(user -> user.getUsername().toLowerCase().equals(jwtService.extractUsername(token).toLowerCase()))) {
             workout.getUsers().add(userService.getUserByUsername(jwtService.extractUsername(token)));
         }
         workout.getUsers().forEach(user -> {
