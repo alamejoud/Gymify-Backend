@@ -101,6 +101,12 @@ public class UserEntity {
     private List<WorkoutEntity> workouts = new ArrayList<>();
     @ToString.Exclude
     @JsonIgnore
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @Getter
+    @Setter
+    private List<DietEntity> diets = new ArrayList<>();
+    @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "messageFrom")
     @Getter
     @Setter

@@ -22,15 +22,15 @@ public class ChatRepository implements ChatRepositoryInterface{
         if (role.equals("admin")) {
             results = entityManager.createQuery("SELECT u FROM UserEntity u WHERE lower(u.username) <> lower(:username) AND lower(u.username) LIKE lower(:search)", UserEntity.class)
                     .setParameter("username", username)
-                    .setParameter("search", "%" + search + "%")
+                    .setParameter("search", "%" + search.trim() + "%")
                     .getResultList();
         } else if (role.equals("trainee")) {
             results = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.role <> 'trainee' AND lower(u.username) LIKE lower(:search)", UserEntity.class)
-                    .setParameter("search", "%" + search + "%")
+                    .setParameter("search", "%" + search.trim() + "%")
                     .getResultList();
         } else {
             results = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.role = 'trainee' or u.role = 'admin' AND lower(u.username) LIKE lower(:search)", UserEntity.class)
-                    .setParameter("search", "%" + search + "%")
+                    .setParameter("search", "%" + search.trim() + "%")
                     .getResultList();
         }
         return results;

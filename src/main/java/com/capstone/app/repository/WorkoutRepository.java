@@ -58,7 +58,7 @@ public class WorkoutRepository implements WorkoutRepositoryInterface{
     @Override
     public List<WorkoutEntity> getTrainersWorkouts(String search) {
         List<WorkoutEntity> workouts = entityManager.createQuery("SELECT w FROM WorkoutEntity w join w.createdBy c where lower(w.workoutName) like lower(:search) and (c.role = 'trainer' or c.role = 'admin')", WorkoutEntity.class)
-                .setParameter("search", "%" + search + "%").getResultList();
+                .setParameter("search", "%" + search.trim() + "%").getResultList();
         return workouts;
     }
 

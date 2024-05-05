@@ -66,7 +66,7 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
 
     @Override
     public List<ExerciseEntity> getExerciseBySearch(String search, String username, String role) {
-        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search + "%").getResultList();
+        List<ExerciseEntity> exercises = entityManager.createQuery("SELECT e FROM ExerciseEntity e where lower(e.exerciseName) like lower(:search)", ExerciseEntity.class).setParameter("search", "%" + search.trim() + "%").getResultList();
         return exercises;
     }
 
@@ -88,19 +88,19 @@ public class ExerciseRepository implements ExerciseRepositoryInterface{
 
     @Override
     public List<MuscleEntity> filterMuscles(String muscleName) {
-        List<MuscleEntity> muscles = entityManager.createQuery("SELECT m FROM MuscleEntity m where lower(m.muscleName) like lower(:muscleName)", MuscleEntity.class).setParameter("muscleName", "%" + muscleName.toLowerCase() + "%").getResultList();
+        List<MuscleEntity> muscles = entityManager.createQuery("SELECT m FROM MuscleEntity m where lower(m.muscleName) like lower(:muscleName)", MuscleEntity.class).setParameter("muscleName", "%" + muscleName.toLowerCase().trim() + "%").getResultList();
         return muscles;
     }
 
     @Override
     public List<EquipmentEntity> filterEquipments(String equipmentName) {
-        List<EquipmentEntity> equipments = entityManager.createQuery("SELECT e FROM EquipmentEntity e where  lower(e.equipmentName) like lower(:equipmentName)", EquipmentEntity.class).setParameter("equipmentName", "%" + equipmentName.toLowerCase() + "%").getResultList();
+        List<EquipmentEntity> equipments = entityManager.createQuery("SELECT e FROM EquipmentEntity e where  lower(e.equipmentName) like lower(:equipmentName)", EquipmentEntity.class).setParameter("equipmentName", "%" + equipmentName.toLowerCase().trim() + "%").getResultList();
         return equipments;
     }
 
     @Override
     public List<TypeEntity> filterTypes(String typeName) {
-        List<TypeEntity> types = entityManager.createQuery("SELECT t FROM TypeEntity t where  lower(t.typeName) like lower(:typeName)", TypeEntity.class).setParameter("typeName", "%" + typeName.toLowerCase() + "%").getResultList();
+        List<TypeEntity> types = entityManager.createQuery("SELECT t FROM TypeEntity t where  lower(t.typeName) like lower(:typeName)", TypeEntity.class).setParameter("typeName", "%" + typeName.toLowerCase().trim() + "%").getResultList();
         return types;
     }
 

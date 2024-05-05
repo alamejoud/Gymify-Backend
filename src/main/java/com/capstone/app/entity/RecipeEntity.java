@@ -1,5 +1,6 @@
 package com.capstone.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -160,6 +161,12 @@ public class RecipeEntity {
     )
     @Getter
     private List<KeywordEntity> keywords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe")
+    @Getter
+    @Setter
+    @JsonIgnore
+    private List<DietRecipeEntity> dietRecipes = new ArrayList<>();
 
     public void setKeywords(List<KeywordEntity> keywords) {
         this.keywords.clear();
