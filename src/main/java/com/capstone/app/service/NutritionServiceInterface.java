@@ -15,4 +15,5 @@ public interface NutritionServiceInterface {
     public void subscribeToDiet(String token, int dietId);
     public void unsubscribeToDiet(String token, int dietId);
     public List<DietEntity> getDietitiansDietPlans(String search);
+    public List<DietEntity> getMyDietNames(String token);
 }

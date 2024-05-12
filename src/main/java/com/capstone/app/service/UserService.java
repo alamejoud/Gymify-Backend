@@ -52,7 +52,6 @@ public class UserService implements UserServiceInterface{
         }
 
         return false;
-
     }
 
     @Override
@@ -78,6 +77,11 @@ public class UserService implements UserServiceInterface{
     @Override
     public UserEntity getUserByUsernameAndPassword(String username, String password) {
         return null;
+    }
+
+    @Override
+    public List<UserEntity> getUsers(String username, String role) {
+        return userRepository.getUsers(username, role);
     }
 
     @Override

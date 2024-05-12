@@ -6,6 +6,7 @@ import com.capstone.app.repository.WorkoutRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -97,6 +98,19 @@ public class WorkoutService implements WorkoutServiceInterface{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<WorkoutEntity> getMyWorkoutNames(String token) {
+        List<WorkoutEntity> workouts = workoutRepository.getMyWorkouts(jwtService.extractUsername(token), false);
+        List<WorkoutEntity> workoutsToSend = new ArrayList<>();
+        workouts.forEach(workout -> {
+            WorkoutEntity workoutToSend = new WorkoutEntity();
+            workoutToSend.setWorkoutId(workout.getWorkoutId());
+            workoutToSend.setWorkoutName(workout.getWorkoutName());
+            workoutsToSend.add(workoutToSend);
+        });
+        return workoutsToSend.size() > 4 ? workoutsToSend.subList(0, 4) : workoutsToSend;
     }
 
 }

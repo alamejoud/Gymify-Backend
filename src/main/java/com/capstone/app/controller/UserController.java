@@ -140,4 +140,14 @@ public class UserController {
                 .body(response);
     }
 
+    @GetMapping("/getUsers")
+    public ResponseEntity<Object> getTrainers(@RequestParam String role, @RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("users", userService.getUsers(jwtService.extractUsername(token), role)));
+    }
+
 }

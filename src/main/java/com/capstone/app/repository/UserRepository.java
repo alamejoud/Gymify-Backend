@@ -58,4 +58,12 @@ public class UserRepository implements UserRepositoryInterface{
     public void updateUser(UserEntity userEntity) {
         entityManager.merge(userEntity);
     }
+
+    @Override
+    public List<UserEntity> getUsers(String username, String role) {
+        return entityManager.createQuery("SELECT u FROM UserEntity u WHERE LOWER(u.username) NOT LIKE LOWER(:username) AND LOWER(u.role) LIKE LOWER(:role)", UserEntity.class)
+                .setParameter("username", "%" + username + "%")
+                .setParameter("role", "%" + role + "%")
+                .getResultList();
+    }
 }

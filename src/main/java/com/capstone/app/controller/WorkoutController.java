@@ -98,4 +98,12 @@ public class WorkoutController {
         workoutService.unsubscribeFromWorkout(workoutId, token);
         return ResponseEntity.ok().body(Map.of("message", "Unsubscribed from workout successfully."));
     }
+
+    @GetMapping("/getMyWorkoutNames")
+    public ResponseEntity<Object> getMyWorkoutNames(@RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok().body(Map.of("workoutNames", workoutService.getMyWorkoutNames(token)));
+    }
 }

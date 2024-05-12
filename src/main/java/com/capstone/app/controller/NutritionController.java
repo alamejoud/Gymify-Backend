@@ -91,4 +91,12 @@ public class NutritionController {
         return ResponseEntity.ok(Map.of("dietPlanList", nutritionService.getDietitiansDietPlans(search)));
     }
 
+    @GetMapping("/getMyDietNames")
+    public ResponseEntity<Object> getMyDietNames(@RequestHeader("Authorization") String token) {
+        if (!CommonUtil.authenticateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Session expired. Please login again."));
+        }
+        return ResponseEntity.ok(Map.of("dietNames", nutritionService.getMyDietNames(token)));
+    }
+
 }

@@ -7,6 +7,7 @@ import com.capstone.app.repository.NutritionRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -108,5 +109,18 @@ public class NutritionService implements NutritionServiceInterface{
     @Override
     public List<DietEntity> getDietitiansDietPlans(String search) {
         return nutritionRepository.getDietitiansDietPlans(search);
+    }
+
+    @Override
+    public List<DietEntity> getMyDietNames(String token) {
+        List<DietEntity> diets = nutritionRepository.getDietPlans(jwtService.extractUsername(token), false);
+        List<DietEntity> dietsToSend = new ArrayList<>();
+        diets.forEach(diet -> {
+            DietEntity dietToSend = new DietEntity();
+            dietToSend.setDietId(diet.getDietId());
+            dietToSend.setDietName(diet.getDietName());
+            dietsToSend.add(dietToSend);
+        });
+        return dietsToSend.size() > 4 ? dietsToSend.subList(0, 4) : dietsToSend;
     }
 }

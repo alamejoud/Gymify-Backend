@@ -13,4 +13,5 @@ public interface WorkoutServiceInterface {
     public List<WorkoutEntity> getTrainersWorkouts(String search);
     public void subscribeToWorkout(int workoutId, String token);
     public void unsubscribeFromWorkout(int workoutId, String token);
+    public List<WorkoutEntity> getMyWorkoutNames(String token);
 }
